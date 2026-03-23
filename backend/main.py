@@ -43,18 +43,20 @@ async def chat_stream(request: ChatRequest):
 
         try:
             # To agent_app.stream() trexei komvo komvo kai leei thn katastash kathe se vhma
-            for output in agent_app.stream(initial_state):
+            async for output in agent_app.astream(initial_state):
                 
                 for node_name, state_update in output.items():
                     
                     if node_name == "planner":
                         # Stelno to plano
+                        print("📡 [Server] Στέλνω το Πλάνο στη React!") # <-- ΝΕΟ
                         yield {
                             "event": "plan_generated",
                             "data": json.dumps({"plan": state_update["plan"]}, ensure_ascii=False)
                         }
                         
                     elif node_name == "executor":
+                        print("📡 [Server] Στέλνω update για το Βήμα στη React!")
                         # Stelno to ananeomeno plano
                         yield {
                             "event": "step_executed",
@@ -63,6 +65,7 @@ async def chat_stream(request: ChatRequest):
                         
                     elif node_name == "finalizer":
                         # Stelno thn telikh apanthsh
+                        print("📡 [Server] Στέλνω την Τελική Απάντηση στη React!")
                         yield {
                             "event": "final_response",
                             "data": json.dumps({"response": state_update["final_response"]}, ensure_ascii=False)

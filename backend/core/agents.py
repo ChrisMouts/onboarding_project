@@ -131,6 +131,10 @@ def finalizer_node(state: AgentState) -> dict:
     {state['plan']}
     
     Γράψε την τελική, φιλική και χρήσιμη απάντηση για τον χρήστη."""
-    
+    print("[Finalizer] Στέλνω το prompt στην OpenAI... περιμένω...")
+
     final_response = llm.invoke(summary_prompt).content
+
+    print("[Finalizer] Η OpenAI απάντησε επιτυχώς!")
+
     return {"final_response": final_response}
