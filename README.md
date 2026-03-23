@@ -1,247 +1,86 @@
-# 🧠 Plan & Act Agent – Intern Project
+# 🧠 Plan & Act Agent – Intern Project (Implementation)
 
-**Assigned to:** Chris  
-**Project Lead:** George Kotzamanis  
-**API Key Contact:** George Kotzamanis  
+**Developer:** Chris 
+**Tech Stack:** React (Vite), FastAPI, LangGraph, LangChain
+**Status:** MVP + Streaming + Tools Completed
 
 ---
 
 ## 📌 Project Overview
 
-You will build an intelligent **Plan & Act Agent** — a system that:
-
-1. Understands a user request  
-2. Creates a structured plan  
-3. Executes that plan step-by-step  
-4. Returns a final, useful result  
-
-This is **not just a chatbot**.  
-It is an **agentic system** with planning, execution, and tool usage.
+Αυτό το repository περιέχει την υλοποίηση του **Plan & Act Agent**. Πρόκειται για ένα πλήρως λειτουργικό, Full-Stack agentic σύστημα που δεν απαντά απλά σαν chatbot, αλλά σκέφτεται, σχεδιάζει και εκτελεί βήματα χρησιμοποιώντας εξωτερικά εργαλεία.
 
 ---
 
-## 🎯 Core Capabilities
+## 🎯 Core Capabilities Implemented
 
-### ✅ 1. Plan Creation
-Given a user query, the agent must generate a structured plan:
-- Step-by-step
-- Clear and logical
-- Visible to the user
+### ✅ 1. Plan Creation & Visibility
+- Ο **Planner Agent** αναλύει το ερώτημα και επιστρέφει ένα αυστηρό JSON πλάνο.
+- Το πλάνο εμφανίζεται στο Frontend **πριν** και **κατά τη διάρκεια** της εκτέλεσης.
 
----
+### ✅ 2. Dynamic Execution & Tool Usage
+- Ο **Executor Agent** αναλαμβάνει να "τρέξει" το πλάνο.
+- Επιλέγει αυτόματα το σωστό εργαλείο για το κάθε βήμα.
+- **Error Handling:** Έχει ενσωματωμένο σύστημα **Max 2 Retries** σε περίπτωση που ένα εργαλείο αποτύχει.
 
-### ✅ 2. Plan Execution
-The agent must:
-- Execute each step
-- Use tools when needed
-- Iterate until completion
+### ✅ 3. Real-Time Streaming (SSE)
+- Μηδενικός χρόνος αναμονής (White screen).
+- Το backend χρησιμοποιεί **Server-Sent Events** για να στέλνει ζωντανά updates στη React (δημιουργία πλάνου -> in progress -> completed -> τελική απάντηση).
 
----
-
-### ✅ 3. Agent Loop (Mandatory)
-
-The system must follow this loop:
-
-1. Understand request  
-2. Generate plan  
-3. Execute step  
-4. Evaluate result  
-5. Decide next step  
-6. Repeat until completion  
-
----
-
-### ✅ 4. Conversational Interface
-- Chat-based UI
-- Multi-turn conversations
-- Memory of at least last **10 exchanges**
-
----
-
-### ✅ 5. Internet Search
-- The agent must be able to search the web during execution
+### ⏳ 4. Conversation Memory (In Progress)
+- Προετοιμασία υποδομής για μνήμη των τελευταίων 10 μηνυμάτων (Phase 4).
 
 ---
 
 ## 🧰 Tools System
 
-The agent must support a **tool layer**.
+Το σύστημα υποστηρίζει επεκτάσιμα εργαλεία. Αυτή τη στιγμή είναι ενσωματωμένα τα εξής:
 
-### Required Tool
-- Web Search
-
-### Optional Tools (Bonus)
-- Calculator
-- File Reader
-
-### Tool Requirements
-Each tool must:
-- Have a clear input/output schema
-- Be callable during execution
-- Return structured outputs usable by the agent
-
-👉 The system should be designed so **new tools can be added easily**
+- 🌐 **web_search:** Για real-time αναζήτηση στο ίντερνετ (μέσω DuckDuckGo).
+- 🧮 **calculator:** Για μαθηματικούς υπολογισμούς.
+- 📄 **file_reader:** Για ανάγνωση τοπικών αρχείων κειμένου.
+- 🧠 **none:** Ειδικό fallback για βήματα που απαιτούν απλή λογική (π.χ. σύνταξη κειμένου), αποτρέποντας τα LLM hallucinations.
 
 ---
 
-## 🧠 Architecture
+## 🧠 Architecture (Multi-Agent Pattern)
 
-### Preferred Pattern (Recommended)
+Το Backend είναι χτισμένο πάνω στο **LangGraph** και ακολουθεί αρχιτεκτονική πολλαπλών κόμβων (Nodes):
 
-A **multi-agent design** is encouraged:
+1. **Planner Node:** Παράγει το JSON Plan.
+2. **Executor Node:** Καλεί τα Tools και ανανεώνει το status.
+3. **Finalizer Node:** Συνθέτει το τελικό Markdown κείμενο αυστηρά στα Ελληνικά.
 
-- **Planner Agent**
-  - Creates the plan
-
-- **Executor Agent**
-  - Executes steps one-by-one
-
----
-
-### Optional (Advanced)
-- Use an **A2A (Agent-to-Agent) communication pattern**
-
----
-
-## 🖥️ Frontend Requirements
-
-- Clean chatbot UI
-- Responsive design
-
-### Must Include
-
-- ✅ Plan visibility (user sees plan before execution)
-- ✅ Execution progress (current step, status)
-- ✅ Final response clearly displayed
-- ✅ Conversation memory
-- ✅ **Streaming responses (real-time updates)**
-
----
-
-## ⚙️ Backend Requirements
-
-- OpenAI integration using: `gpt-4.1-mini`
-- Tool execution system
-- Plan generation logic
-- Agent loop implementation
-- Conversation history management
-- API endpoints (if separate backend)
-
----
-
-## 🔄 User Flow
-
-1. User enters a query  
-2. Agent generates a plan (visible)  
-3. Agent executes steps (with progress updates)  
-4. Agent returns final result  
-5. User continues conversation  
-
----
-
-## 💡 Example
-
-### Input
-> “Plan a 3-day trip to Tokyo and tell me what to pack”
-
-### Plan
-1. Check Tokyo weather  
-2. Research travel packing recommendations  
-3. Combine results  
-
----
-
-## 📦 Plan Format (Required)
-
-```json
-[
-  {
-    "step_id": 1,
-    "description": "Search Tokyo weather",
-    "tool": "web_search",
-    "status": "pending"
-  }
-]
+### 📁 Mini File Structure
+```text
+agentic-planner/
+├── backend/                  
+│   ├── core/                 # LangGraph Logic (Agents, Graph, Tools)
+│   └── main.py               # FastAPI Streaming Server (Port 8001)
+└── frontend/                 
+    └── src/App.jsx           # React UI & SSE Fetch Logic (Port 5173)
 ```
 
 ---
 
-## 📊 Execution Transparency
+## 💻 How to Run Locally
 
-The user should see:
+### 1. Backend (FastAPI)
+Από τον φάκελο `backend/`:
+```bash
+python -m venv venv
+# Ενεργοποίηση venv (Windows: .\venv\Scripts\activate)
+pip install -r requirements.txt
+```
+*Φτιάξτε ένα `.env` αρχείο και προσθέστε το API key*
+```bash
+uvicorn main:app --reload --port 8001
+```
 
-- Current step being executed
-- Tool usage
-- Progress updates
-
----
-
-## 🧠 Memory
-
-### Required
-- Store last **10 messages**
-
----
-
-## ❗ Error Handling
-
-The system must:
-
-- Retry failed tool calls (max 2 times)
-- Handle API failures gracefully
-- Inform the user clearly
-
----
-
-## 🚀 Deployment Requirements
-
-The project must be deployable on:
-
-👉 **Railway**
-
-### Must Include
-- `.env.example`
-- Setup instructions
-
----
-
-## 🔐 Security Requirements
-
-- ❌ No hardcoded API keys  
-- ✅ Use environment variables  
-- ❌ Never expose API keys in frontend  
-- ✅ All OpenAI calls must go through backend  
-
----
-
-## 🧪 Success Criteria
-
-The project will be evaluated on:
-
-- ✅ Plan quality
-- ✅ Execution correctness
-- ✅ UX clarity
-- ✅ Code quality
-- ✅ Deployment readiness
-
----
-
-## 🎁 Bonus Features (Optional)
-
-- Editable plan before execution  
-- Multi-agent orchestration  
-- Execution logs dashboard  
-
----
-
-## 🏁 Getting Started
-
-1. Choose architecture  
-2. Build MVP  
-3. Add tools  
-4. Add streaming  
-5. Deploy  
-
----
-
-🚀 Build something you would proudly demo!
+### 2. Frontend (React/Vite)
+Από τον φάκελο `frontend/`:
+```bash
+npm install
+npm run dev
+```
+Ανοίξτε τον browser στο **http://localhost:5173**
