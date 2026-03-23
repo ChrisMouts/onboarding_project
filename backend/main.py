@@ -1,4 +1,5 @@
 import os
+import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -59,6 +60,23 @@ async def chat_stream(request: ChatRequest):
         try:
             async for output in agent_app.astream(initial_state):
                 for node_name, state_update in output.items():
+
+                    # Φτιάχνω ένα μοναδικό ID για αυτό το log
+                    log_id = str(uuid.uuid4())
+                    # Στέλνουμε το log ανάλογα με τον κόμβο
+                    log_msg = f"Ενημέρωση από: {node_name.upper()}"
+                    if node_name == "planner":
+                        log_msg = "⚙️ [PLANNER] Παραγωγή νέου πλάνου εκτέλεσης..."
+                    elif node_name == "executor":
+                        log_msg = "🛠️ [EXECUTOR] Εκτέλεση βημάτων και κλήση εργαλείων..."
+                    elif node_name == "finalizer":
+                        log_msg = "🧠 [FINALIZER] Σύνθεση τελικής απάντησης..."
+                        
+                    yield {
+                        "event": "log",
+                        "data": json.dumps({"id": log_id, "message": log_msg}, ensure_ascii=False)
+                    }
+
                     
                     if node_name == "planner":
                         yield {
@@ -81,7 +99,7 @@ async def chat_stream(request: ChatRequest):
                 
                 await asyncio.sleep(0.1)
 
-            # 2. Αφού τελειώσει επιτυχώς, αποθηκεύουμε την ανταλλαγή στη Μνήμη!
+            # 2. Αφού τελειώσει επιτυχώς, αποθηκεύουμε την ανταλλαγή στη Μνήμη
             if final_answer:
                 MEMORY_STORE[thread_id].append({"role": "User", "content": request.message})
                 MEMORY_STORE[thread_id].append({"role": "Agent", "content": final_answer})

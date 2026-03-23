@@ -164,5 +164,58 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* --- Execution Logs Dashboard --- */
+.logs-toggle-btn {
+  background: transparent;
+  border: 1px solid #4ade80;
+  color: #4ade80;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.logs-toggle-btn:hover, .logs-toggle-btn.active {
+  background: #4ade80;
+  color: #18181b;
+}
+
+.logs-dashboard {
+  background-color: #09090b;
+  color: #22c55e;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 12px;
+  border-bottom: 1px solid #27272a;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.logs-dashboard .logs-header {
+  color: #a1a1aa;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px dashed #3f3f46;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.log-line {
+  margin-bottom: 4px;
+}
+.log-time {
+  color: #71717a;
+  margin-right: 10px;
+}
+
+
+
+
+
+
 .input-form button:hover:not(:disabled) { background-color: #2563eb; }
 .input-form button:disabled { background-color: #93c5fd; cursor: not-allowed; }

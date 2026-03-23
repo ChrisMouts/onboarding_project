@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Send, Loader2, CheckCircle2, Circle, XCircle, BrainCircuit, User } from 'lucide-react';
+import { Send, Loader2, CheckCircle2, Circle, XCircle, BrainCircuit, User, Terminal } from 'lucide-react';
 import './App.css';
 
 function App() { 
@@ -8,6 +8,9 @@ function App() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const [logs, setLogs] = useState([]);
+  const [showLogs, setShowLogs] = useState(false);
+  const [threadId] = useState(() => 'thread-' + Math.random().toString(36).substr(2, 9));
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,6 +25,8 @@ function App() {
     setInput('');
     setIsLoading(true);
 
+    setLogs([{ timestamp: new Date().toLocaleTimeString(), message: "🚀 Εκκίνηση νέου αιτήματος..." }]);
+
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setMessages(prev => [...prev, { role: 'agent', content: '', plan: [], isGenerating: true }]);
 
@@ -29,7 +34,7 @@ function App() {
       const res = await fetch('http://localhost:8001/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, thread_id: "default-thread" })
+        body: JSON.stringify({ message: userMsg, thread_id: threadId })
       });
 
       const reader = res.body.getReader();
@@ -81,10 +86,19 @@ function App() {
                 } else if (eventType === 'final_response') {
                   lastMsg.content = typeof data.response === 'string' ? data.response : JSON.stringify(data.response);
                   lastMsg.isGenerating = false;
+                } else if (eventType === 'log') {
+                  // Αποθήκευση του log
+                 setLogs(prev => {
+                    // Αν η React προσπαθήσει να βάλει ξανά το ΙΔΙΟ ID, το αγνοούμε!
+                    if (prev.some(log => log.id === data.id)) return prev; 
+                    
+                    return [...prev, { id: data.id, timestamp: new Date().toLocaleTimeString(), message: data.message }];
+                });
                 } else if (eventType === 'error') {
                   lastMsg.content = `❌ Σφάλμα Backend: ${data.detail}`;
                   lastMsg.isGenerating = false;
                 }
+
 
                 newMessages[newMessages.length - 1] = lastMsg;
                 return newMessages;
@@ -119,9 +133,29 @@ function App() {
 
   return (
     <div className="chat-container">
-      <div className="chat-header">
+      <div className="chat-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Agentic Planner AI</h1>
+        <button 
+          onClick={() => setShowLogs(!showLogs)} 
+          className={`logs-toggle-btn ${showLogs ? 'active' : ''}`}
+        >
+          <Terminal size={18} /> Developer Logs
+        </button>
       </div>
+
+      {showLogs && (
+        <div className="logs-dashboard">
+          <div className="logs-header">System Terminal</div>
+          <div className="logs-content">
+            {logs.map((log, idx) => (
+              <div key={idx} className="log-line">
+                <span className="log-time">[{log.timestamp}]</span> 
+                <span className="log-text">{log.message}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="messages-area">
         {messages.map((msg, idx) => (
