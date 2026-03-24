@@ -26,7 +26,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", # Για να δουλεύει τοπικά
-        "https://reasonable-nurturing-production.up.railway.app" # Η πρόσκληση για το Live Frontend
+        "reasonable-nurturing-production.up.railway.app" # Η πρόσκληση για το Live Frontend
     ],  # Edo tha mpei to URL ths React
     allow_credentials=True,
     allow_methods=["*"],
