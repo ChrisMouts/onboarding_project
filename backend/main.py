@@ -24,7 +24,10 @@ app = FastAPI(title="Agentic Planner API", version="1.0.0")
 # Rythmish CORS gia na mhn mplokarei o browser me thn React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Edo tha mpei to URL ths React
+    allow_origins=[
+        "http://localhost:5173", # Για να δουλεύει τοπικά
+        "https://reasonable-nurturing-production.up.railway.app" # Η πρόσκληση για το Live Frontend
+    ],  # Edo tha mpei to URL ths React
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
