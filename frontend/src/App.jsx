@@ -175,6 +175,18 @@ function App() {
       )}
 
       <div className="messages-area">
+        
+        {/* --- ΝΕΟ: Η Οθόνη Υποδοχής (Empty State) --- */}
+        <div className={`welcome-screen ${messages.length > 0 ? 'hidden' : ''}`}>
+          <div className="welcome-logo-container">
+            <BrainCircuit size={48} strokeWidth={1.5} />
+          </div>
+          <h2>Agentic Planner AI</h2>
+          <p>Developed by <strong>Christos Moutselos</strong></p>
+          <span className="welcome-company">for AI By DNA</span>
+        </div>
+        {/* ------------------------------------------- */}
+
         {messages.map((msg, idx) => {
           const isLastMessage = idx === messages.length - 1;
           return (

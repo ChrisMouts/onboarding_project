@@ -73,6 +73,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  position: relative; /* ΝΕΟ: Σημαντικό για το απόλυτο κεντράρισμα του Welcome Screen */
 }
 
 /* Animation για να μπαίνουν ομαλά τα μηνύματα */
@@ -364,6 +365,87 @@ body {
   margin-bottom: 8px;
   letter-spacing: 1px;
 }
+
+/* =========================================
+   WELCOME SCREEN (Empty State)
+   ========================================= */
+.welcome-screen {
+  position: absolute;
+  top: 45%; /* Ελαφρώς πιο πάνω από το απόλυτο κέντρο, είναι πιο ωραίο στο μάτι */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* Smooth transition για το σβήσιμο */
+  animation: welcomeFadeIn 0.8s ease-out forwards;
+  z-index: 5;
+  width: 100%;
+}
+
+/* Όταν γράψεις το πρώτο μήνυμα, αυτή η κλάση το κάνει να γλιστράει πάνω και να σβήνει */
+.welcome-screen.hidden {
+  opacity: 0 !important;
+  transform: translate(-50%, -70%) scale(0.95) !important;
+  pointer-events: none;
+  animation: none !important; /* ΑΥΤΟ ΛΥΝΕΙ ΤΟ ΠΡΟΒΛΗΜΑ: Σκοτώνει το "κλείδωμα" της εμφάνισης */
+}
+
+@keyframes welcomeFadeIn {
+  from { opacity: 0; transform: translate(-50%, -40%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.welcome-logo-container {
+  background: linear-gradient(135deg, #10b981, #3b82f6);
+  padding: 20px;
+  border-radius: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-screen h2 {
+  font-size: 2.2rem;
+  color: #f4f4f5;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.welcome-screen p {
+  color: #a1a1aa;
+  font-size: 1.1rem;
+}
+
+.welcome-screen strong {
+  color: #e4e4e7;
+}
+
+.welcome-company {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 16px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.1);
+}
+
+
+
+
+
 
 .log-time { color: #52525b; margin-right: 10px; }
 
